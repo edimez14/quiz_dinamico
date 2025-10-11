@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Dinámico Mejorado</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Quiz Dinámico</h1>
+    
+    <div class="progress-container">
+      <span id="progress-text">Pregunta 0 de 0</span>
+      <div class="progress-bar">
+        <div class="progress" id="progress-bar"></div>
+      </div>
+      <span id="timer">Tiempo: 0s</span>
+    </div>
+    
+    <div class="score-container">
+      <span id="current-score">Puntuación: 0/0</span>
+    </div>
+    
+    <div id="quiz">
+      <p id="question">Cargando preguntas...</p>
+      <div id="answers"></div>
+    </div>
+    
+    <div class="buttons-container">
+      <button id="next-btn" disabled>Siguiente</button>
+      <button id="restart-btn" style="display: none;">Reiniciar Quiz</button>
+    </div>
+    
+    <div id="loading" class="loading">Cargando preguntas...</div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
