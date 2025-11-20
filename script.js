@@ -48,23 +48,23 @@ async function loadQuestions() {
 
         // Intentar cargar de API con timeout
         const apiPromise = fetch("https://opentdb.com/api.php?amount=10&category=9&difficulty=medium&type=multiple");
-        const timeoutPromise = new Promise((_, reject) => 
+        const timeoutPromise = new Promise((_, reject) =>
             setTimeout(() => reject(new Error("Timeout")), 10000)
         );
 
         const res = await Promise.race([apiPromise, timeoutPromise]);
-        
+
         if (!res.ok) throw new Error("Error al cargar preguntas");
 
         const data = await res.json();
-        
+
         if (data.results && data.results.length > 0) {
             loadingEl.innerHTML = "Traduciendo preguntas...<br><small>Esto puede tomar unos segundos</small>";
-            
+
             // Traducir máximo 10 preguntas para no saturar
             const questionsToTranslate = data.results.slice(0, 10);
             const translatedQuestions = [];
-            
+
             for (const q of questionsToTranslate) {
                 try {
                     const question = await translateToSpanish(decodeHtml(q.question));
@@ -72,9 +72,9 @@ async function loadQuestions() {
                     const incorrect = await Promise.all(
                         q.incorrect_answers.map(ans => translateToSpanish(decodeHtml(ans)))
                     );
-                    
+
                     const allAnswers = [...incorrect, correct].sort(() => Math.random() - 0.5);
-                    
+
                     translatedQuestions.push({
                         question: question,
                         answers: allAnswers,
@@ -85,7 +85,7 @@ async function loadQuestions() {
                     // Continuar con la siguiente pregunta
                 }
             }
-            
+
             if (translatedQuestions.length > 0) {
                 questions = translatedQuestions;
             } else {
@@ -273,23 +273,27 @@ function selectAnswer(btn, correct) {
     nextBtn.disabled = false;
 }
 
-nextBtn.addEventListener("click", () => {
-    currentQuestion++;
-    if (currentQuestion < questions.length) {
-        showQuestion();
-        startTimer();
-    } else {
-        endQuiz();
-    }
-});
+if (nextBtn) {
+    nextBtn.addEventListener("click", () => {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            showQuestion();
+            startTimer();
+        } else {
+            endQuiz();
+        }
+    });
+}
 
-restartBtn.addEventListener("click", () => {
-    currentQuestion = 0;
-    score = 0;
-    nextBtn.style.display = "block";
-    restartBtn.style.display = "none";
-    loadQuestions();
-});
+if (restartBtn) {
+    restartBtn.addEventListener("click", () => {
+        currentQuestion = 0;
+        score = 0;
+        nextBtn.style.display = "block";
+        restartBtn.style.display = "none";
+        loadQuestions();
+    });
+}
 
 function endQuiz() {
     clearInterval(timerInterval);
@@ -323,4 +327,14 @@ function endQuiz() {
 }
 
 // Iniciar la aplicación
-loadQuestions();
+if (typeof module === 'undefined') {
+    loadQuestions();
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        decodeHtml,
+        getLocalQuestions,
+        translateToSpanish,
+    };
+}
